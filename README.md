@@ -10,19 +10,19 @@ Built using **SwiftUI** and **OpenCV**, it ensures high-quality image processing
 ✅ Save the adjusted image back to Photos  
 
 ## 🚀 Setup Instructions  
-1. Clone the repository:  
-git clone https://github.com/frostyfire7/ColorTemperatureApp.git
-cd ColorTemperature
+1. Clone this repository\
+```git clone https://github.com/frostyfire7/ColorTemperatureApp.git```\
+```cd ColorTemperature```
 
-2. Open ColorTemperature.xcodeproj in Xcode.
+2. Open ColorTemperature.xcworkspace in Xcode.
 
-3. Ensure you have CocoaPods installed and run:
-pod install
+3. Ensure you have CocoaPods installed and run\
+```pod install```
 
-4. Run the app on an iOS device or simulator.
+4. Run the app on an iOS device.
 
-📷 Demo
-Check out the video demonstration here: 
+## 📷 Demo
+Check out the video demonstration here: https://shorturl.at/Rc586
 
-📩 Contact
-For any questions, reach out to julisuadetya@gmail.com
+## 📩 Contact
+For any questions, please reach out to julisuadetya@gmail.com
