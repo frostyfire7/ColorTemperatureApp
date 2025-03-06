@@ -1,0 +1,46 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode files
+xcuserdata/
+*.xcworkspace/
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+.idea/
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/
+Carthage/Checkouts
+Carthage/Build
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/readme.md
+
+# Logs
+*.log
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+
+# Generated files
+*.plist
+*.hmap
+*.modulemap
+
