@@ -15,7 +15,13 @@ struct ContentView: View {
         NavigationView {
             VStack(spacing: 20) {
                 // Image Selection or Display Area
-                if let image = viewModel.selectedImage {
+                if let processedImage = viewModel.processedImage {
+                    Image(uiImage: processedImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .cornerRadius(10)
+                        .padding()
+                } else if let image = viewModel.selectedImage {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -41,25 +47,37 @@ struct ContentView: View {
                 
                 // Temperature Adjustment Slider
                 if viewModel.selectedImage != nil {
-                    Slider(
-                        value: $viewModel.temperatureAdjustment,
-                        in: -100...100,
-                        step: 1
-                    )
-                    .padding()
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text("Cool")
+                                .foregroundColor(.blue)
+                            Spacer()
+                            Text("Warm")
+                                .foregroundColor(.orange)
+                        }
+                        .font(.caption)
+                        .padding(.horizontal)
+                        
+                        Slider(
+                            value: $viewModel.temperatureAdjustment,
+                            in: -100...100,
+                            step: 1
+                        )
+                        .padding(.horizontal)
+                        
+                        Text("Temperature: \(Int(viewModel.temperatureAdjustment))°K")
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
                     
-                    Text("Temperature: \(Int(viewModel.temperatureAdjustment))°K")
-                        .foregroundColor(.secondary)
-                    
-                    HStack {
-                        Button("Adjust Temperature") {
-                            viewModel.adjustImageTemperature()
+                    HStack(spacing: 20) {
+                        Button("Change Image") {
+                            viewModel.showImagePicker = true
                         }
                         .padding()
-                        .background(viewModel.selectedImage != nil ? Color.blue : Color.gray)
+                        .background(Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(10)
-                        .disabled(viewModel.selectedImage == nil)
                         
                         Button("Save Image") {
                             viewModel.saveImage()
@@ -69,9 +87,9 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .disabled(viewModel.processedImage == nil)
-                        .alert(isPresented: $viewModel.showMessage) {
-                            Alert(title: Text(viewModel.alertMessage))
-                        }
+                    }
+                    .alert(isPresented: $viewModel.showMessage) {
+                        Alert(title: Text("Image Saved"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("OK")))
                     }
                 }
             }

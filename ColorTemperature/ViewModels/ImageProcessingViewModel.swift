@@ -7,26 +7,49 @@
 
 import SwiftUI
 import PhotosUI
+import Combine
 
 class ImageProcessingViewModel: ObservableObject {
-    @Published var selectedImage: UIImage?
+    @Published var selectedImage: UIImage? {
+        didSet {
+            if selectedImage != nil && selectedImage != oldValue {
+                processedImage = nil
+                temperatureAdjustment = 0
+                adjustImageTemperature()
+            }
+        }
+    }
     @Published var processedImage: UIImage?
     @Published var showImagePicker = false
-    @Published var temperatureAdjustment: Double = 0
+    @Published var temperatureAdjustment: Double = 0 {
+        didSet {
+            adjustImageTemperature()
+        }
+    }
     @Published var showMessage: Bool = false
     @Published var alertMessage: String = ""
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        $temperatureAdjustment
+            .throttle(for: .milliseconds(10), scheduler: RunLoop.main, latest: true)
+            .sink { [weak self] _ in
+                self?.adjustImageTemperature()
+            }
+            .store(in: &cancellables)
+    }
     
     func adjustImageTemperature() {
         guard let inputImage = selectedImage else { return }
         
+        processedImage = nil
+        
         // Use OpenCV bridge to adjust temperature
-        processedImage = OpenCVBridge.adjustColorTemperature(
-            inputImage,
-            temperature: temperatureAdjustment
-        )
-        DispatchQueue.main.async {
-            self.alertMessage = "Temperature adjusted!\n Please save the image"
-            self.showMessage = true
+        autoreleasepool{
+            processedImage = OpenCVBridge.adjustColorTemperature(
+                inputImage,
+                temperature: temperatureAdjustment
+            )
         }
     }
     
@@ -37,18 +60,15 @@ class ImageProcessingViewModel: ObservableObject {
         }
         
         UIImageWriteToSavedPhotosAlbum(processedImage, nil, nil, nil)
-        print("Image successfully saved")
-        DispatchQueue.main.async {
-            self.alertMessage = "Image saved!\n Please check your photos"
-            self.showMessage = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.alertMessage = "Please check your photos"
+            self?.showMessage = true
         }
     }
     
-    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        if let error = error {
-            print("Error saving image: \(error.localizedDescription)")
-        } else {
-            print("Image saved successfully")
-        }
+    deinit {
+        cancellables.removeAll()
+        selectedImage = nil
+        processedImage = nil
     }
 }
